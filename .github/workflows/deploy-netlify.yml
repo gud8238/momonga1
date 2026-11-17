@@ -29,5 +29,10 @@ jobs:
           node-version: '22'
       - name: Install Netlify CLI
         run: npm install --global netlify-cli
+      - name: Prepare static publish directory
+        run: |
+          mkdir -p .netlify-publish
+          cp index.html .netlify-publish/
+          cp -R src assets .netlify-publish/
       - name: Deploy to existing Netlify site
-        run: netlify deploy --prod --dir=. --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Deploy from GitHub Actions"
+        run: netlify deploy --prod --dir=.netlify-publish --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Deploy from GitHub Actions"
