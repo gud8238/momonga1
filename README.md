@@ -4,8 +4,8 @@
 
 ## 무엇이 들어 있나요?
 - **실제 3D 메시**: 모몽가(몸·얼굴·귀·꼬리·표정), 나무, 수풀, 바위, 그루터기, 들꽃, 나비, 언덕과 구름을 모두 Three.js의 3D 메시로 제작했습니다. **GLB 파일은 사용하지 않았습니다.**
-- **GPT 이미지 시안**: `assets/diorama-concept.jpg`, `model-board.jpg`, `asset-board.jpg`. 이미지는 디자인 레퍼런스로 제공되며 실제 3D 모델로 자동 변환된 것이 아닙니다.
-- **이미지 텍스처**: `assets/textures/grass-tile.png`, `flower-daisy.png`는 3D 씬의 잔디 재질과 꽃 스프라이트에서 실제 사용됩니다.
+- **GPT 이미지 시안**: `assets/diorama-concept.svg`, `model-board.svg`, `asset-board.svg`. 이미지는 디자인 레퍼런스로 제공되며 실제 3D 모델로 자동 변환된 것이 아닙니다.
+- **이미지 텍스처**: `assets/textures/grass-tile.svg`, `flower-daisy.svg`는 3D 씬의 잔디 재질과 꽃 스프라이트에서 실제 사용됩니다.
 - **2가지 시점**: 아이소메트릭 디오라마 회전·확대와 1인칭 시점의 걸어 다니기.
 - **인터랙션**: 모몽가 점프, 나비 비행, 노을/낮 전환, PNG 스크린샷, 원위치.
 
@@ -46,12 +46,12 @@ momonga-meadow/
 │  ├─ main.js            # Three.js 3D 메쉬, 카메라, 조명, 애니메이션, 이벤트
 │  └─ style.css          # 반응형 디자인
 ├─ assets/
-│  ├─ diorama-concept.jpg # GPT 생성 콘셉트 이미지
-│  ├─ model-board.jpg     # GPT 생성 캐릭터/자연물 에셋 보드
-│  ├─ asset-board.jpg     # GPT 생성 구현 스타일 가이드
+│  ├─ diorama-concept.svg # SVG 경량 콘셉트 참고 이미지
+│  ├─ model-board.svg     # SVG 캐릭터/자연물 에셋 보드
+│  ├─ asset-board.svg     # SVG 구현 스타일 가이드
 │  └─ textures/
-│     ├─ grass-tile.png   # 실제 장면에서 사용
-│     └─ flower-daisy.png # 실제 장면에서 사용
+│     ├─ grass-tile.svg   # 실제 장면에서 사용
+│     └─ flower-daisy.svg # 실제 장면에서 사용
 └─ start-windows.bat
 ```
 
