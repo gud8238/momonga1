@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#d5efff" />
+  <title>모몽가의 작은 들판 | Three.js Diorama</title>
+  <link rel="stylesheet" href="./src/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene" aria-label="모몽가의 로우폴리 3D 들판"></canvas>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">✿</span>
+        <span><strong>모몽가의 작은 들판</strong><small>MOMONGA’S LITTLE MEADOW · LOW POLY 3D</small></span>
+      </div>
+      <button id="referenceBtn" class="header-button" type="button" aria-label="이미지 에셋 보기">✦ <span>에셋 보기</span></button>
+    </header>
+    <aside class="intro-card">
+      <span class="pill"><span class="pulse-dot"></span> INTERACTIVE DIORAMA</span>
+      <h1>오늘도 모몽가와<br/><em>반짝이는 하루!</em></h1>
+      <p>작은 들판을 돌려 보고, 가까이 다가가고,<br/>모몽가를 눌러 통통 뛰게 해보세요.</p>
+      <div class="mini-tags"><span>✿ 로우폴리</span><span>☁ 아늑한 들판</span><span>♡ 3D 인터랙션</span></div>
+    </aside>
+    <aside class="scene-tools" aria-label="카메라와 장면 제어">
+      <button id="orbitBtn" class="tool-button selected" type="button" title="디오라마 관람">◈ <span>디오라마</span></button>
+      <button id="walkBtn" class="tool-button" type="button" title="1인칭 탐험">♧ <span>산책하기</span></button>
+      <span class="tool-separator"></span>
+      <button id="jumpBtn" class="tool-button" type="button" title="모몽가 점프">♡ <span>통통!</span></button>
+      <button id="dayBtn" class="tool-button" type="button" title="낮과 노을 전환">☀ <span>노을 전환</span></button>
+      <button id="shotBtn" class="tool-button" type="button" title="이미지로 저장">▣ <span>사진 저장</span></button>
+      <button id="resetBtn" class="tool-button" type="button" title="카메라 원위치">↺ <span>초기화</span></button>
+    </aside>
+    <div class="mode-guide" id="modeGuide"><strong>360° 들판 관람</strong><span>드래그로 회전 · 휠/두 손가락으로 확대</span></div>
+    <div class="walk-guide" id="walkGuide" hidden><strong>1인칭 산책 모드</strong><span>W A S D 이동 · 마우스 드래그/시점 회전 · ESC 해제</span></div>
+    <div class="mobile-pad" id="mobilePad" hidden>
+      <button data-move="KeyW" class="pad-up" aria-label="앞으로">↑</button>
+      <button data-move="KeyA" class="pad-left" aria-label="왼쪽">←</button>
+      <button data-move="KeyS" class="pad-down" aria-label="뒤로">↓</button>
+      <button data-move="KeyD" class="pad-right" aria-label="오른쪽">→</button>
+    </div>
+    <footer class="footer">
+      <span><span class="heart">♥</span> Momonga Meadow</span>
+      <span id="status">3D 디오라마 · 준비 중…</span>
+      <span>THREE.JS × ORIGINAL LOW-POLY SCENE</span>
+    </footer>
+    <div class="toast" id="toast" aria-live="polite"></div>
+    <dialog id="assetDialog" class="asset-dialog">
+      <button id="closeAssetBtn" class="dialog-close" type="button" aria-label="닫기">×</button>
+      <p class="eyebrow">IMAGE ASSETS / STYLE GUIDE</p>
+      <h2>모몽가 들판 · 이미지 시안</h2>
+      <p>GPT로 생성한 콘셉트 이미지입니다. 실제 실시간 3D 화면은 Three.js 메시·재질·조명으로 별도 구현했습니다.</p>
+      <div class="asset-grid">
+        <figure><img src="./assets/diorama-concept.svg" alt="모몽가 들판 3D 디오라마 디자인 시안" /><figcaption>01 · 전체 공간 콘셉트</figcaption></figure>
+        <figure><img src="./assets/model-board.svg" alt="모몽가 캐릭터와 자연 소품 스타일 보드" /><figcaption>02 · 캐릭터·자연 소품</figcaption></figure>
+        <figure><img src="./assets/asset-board.svg" alt="Three.js 제작용 이미지 에셋 구성 시안" /><figcaption>03 · 구성·카메라 시안</figcaption></figure>
+      </div>
+    </dialog>
+    <div id="fatal" class="fatal" hidden><strong>3D 장면을 불러오지 못했습니다.</strong><p>인터넷 연결 상태를 확인하고, 로컬 서버에서 실행해주세요. 자세한 방법은 README.md를 참고하세요.</p><pre id="fatalDetail"></pre></div>
+  </div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
