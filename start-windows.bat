@@ -1,4 +1,4 @@
 @echo off
-cd /d %~dp0
-python -m http.server 5173
-pause
+cd /d "%~dp0"
+call npm install
+call npm start

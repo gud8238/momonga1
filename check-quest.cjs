@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto((process.env.TEST_URL||'http://127.0.0.1:8787'));await page.waitForFunction(()=>window.momongaDebug?.npcs);await page.click('#start-game');await page.fill('#player-name','검증친구');await page.click('#join-game');await page.waitForFunction(()=>momongaDebug.started);
+ async function clickObject(kind){await page.evaluate(kind=>{const d=momongaDebug;const object=kind==='armor'?d.npcs.actors.find(a=>a.type==='yoroi').object:d.npcs.actors[0].object.parent.children.find(o=>o.userData.herb);d.npcs.actors.forEach(a=>a.wait=100);d.player.position.copy(object.position);d.player.position.z+=3;d.camera.position.set(object.position.x,6,object.position.z+13);},kind);await page.waitForTimeout(600);const point=await page.evaluate(kind=>{const d=momongaDebug,o=kind==='armor'?d.npcs.actors.find(a=>a.type==='yoroi').object:d.npcs.actors[0].object.parent.children.find(o=>o.userData.herb);const v=o.position.clone();if(kind==='armor')v.y+=1.4;v.project(d.camera);return {x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2};},kind);await page.mouse.click(point.x,point.y);}
+ await clickObject('armor');await page.getByRole('button',{name:'내가 모아 올게!'}).click();await page.getByRole('button',{name:'출발!'}).click();
+ for(let i=0;i<3;i++)await clickObject('herb');
+ assert((await page.locator('#quest').textContent()).includes('3/3'));
+ await clickObject('armor');assert((await page.locator('#quest').textContent()).includes('완료'));
+ assert.equal(await page.evaluate(()=>momongaDebug.inventory.state.items.herb),3);await page.getByRole('button',{name:'아이템 팔기'}).click();assert.equal(await page.evaluate(()=>momongaDebug.inventory.state.money),15);assert.equal(await page.evaluate(()=>momongaDebug.inventory.state.items.herb),0);await page.getByRole('button',{name:'아이템 팔기'}).click();assert.equal(await page.evaluate(()=>momongaDebug.inventory.state.money),15);
+ console.log('Sale, no duplicate payment, quest accept, collect 3 herbs, return and completion passed');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

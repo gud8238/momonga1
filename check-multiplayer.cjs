@@ -1,0 +1,22 @@
+const {chromium}=require('playwright');const assert=require('node:assert/strict');const URL=process.env.TEST_URL||'http://127.0.0.1:8787';
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+ const a=await browser.newPage({viewport:{width:1440,height:950}}),b=await browser.newPage({viewport:{width:1280,height:900}}),errors=[];for(const p of [a,b])p.on('pageerror',e=>errors.push(e.message));
+ await a.addInitScript(()=>localStorage.setItem('momonga-save-v1',JSON.stringify({items:{breath:99},money:999,quest:'complete'})));
+ async function join(p,name){await p.goto(URL);await p.waitForFunction(()=>window.momongaDebug?.multiplayer);assert.equal(await p.evaluate(()=>momongaDebug.started),false);await p.click('#start-game');await p.fill('#player-name',name);await p.click('#join-game');await p.waitForFunction(()=>momongaDebug.started,{timeout:15000});}
+ await join(a,'찬아');await join(b,'모몽친구');await a.waitForFunction(()=>momongaDebug.multiplayer.peers.size===1);await b.waitForFunction(()=>momongaDebug.multiplayer.peers.size===1);
+ assert.equal(await a.evaluate(()=>momongaDebug.inventory.state.money),0);assert.equal(await a.evaluate(()=>localStorage.getItem('momonga-save-v1')),null);
+ const before=await b.evaluate(()=>[...momongaDebug.multiplayer.peers.values()][0].data.z);await a.keyboard.down('KeyW');await a.waitForTimeout(900);await a.keyboard.up('KeyW');await b.waitForFunction(z=>Math.abs([...momongaDebug.multiplayer.peers.values()][0].data.z-z)>.3,before);
+ await a.keyboard.down('KeyQ');await a.waitForTimeout(1000);await a.keyboard.up('KeyQ');await b.waitForFunction(()=>[...momongaDebug.multiplayer.peers.values()][0].data.glide>.3);await a.keyboard.press('KeyE');await a.waitForFunction(()=>momongaDebug.altitude===0);
+ await a.selectOption('#biome','forest');await b.waitForFunction(()=>[...momongaDebug.multiplayer.peers.values()][0].object.visible===false);await b.selectOption('#biome','forest');await b.waitForFunction(()=>[...momongaDebug.multiplayer.peers.values()][0].object.visible===true);
+ await a.click('[data-emote="wave"]');await b.waitForFunction(()=>[...momongaDebug.multiplayer.peers.values()][0].label.textContent.includes('👋'));
+ await a.evaluate(()=>momongaDebug.inventory.add('scale'));await b.screenshot({path:'work/multiplayer-two-players.png'});
+ await b.reload();await b.waitForFunction(()=>window.momongaDebug?.multiplayer);assert.equal(await b.evaluate(()=>momongaDebug.started),false);await a.waitForFunction(()=>momongaDebug.multiplayer.peers.size===0);
+ // Capacity check uses protocol clients, without rendering another 19 WebGL worlds.
+ const capacity=await a.evaluate(async()=>{window.extra=[];async function connect(name){return new Promise(resolve=>{const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${location.host}/api/ws`);extra.push(ws);ws.onopen=()=>ws.send(JSON.stringify({type:'join',name}));ws.onmessage=e=>{if(JSON.parse(e.data).type==='welcome')resolve(true)};ws.onerror=()=>resolve(false);ws.onclose=()=>resolve(false);setTimeout(()=>resolve(false),4000);});}let joined=0;for(let i=0;i<19;i++)if(await connect('시험'+String(i).padStart(2,'0')))joined++;const over=await connect('초과입장');return{joined,over};});assert.deepEqual(capacity,{joined:19,over:false});
+ await a.evaluate(()=>extra.forEach(s=>s.close()));await a.waitForFunction(()=>momongaDebug.multiplayer.peers.size===0);
+ const invalid=await a.evaluate(()=>new Promise(resolve=>{const ws=new WebSocket(`ws://${location.host}/api/ws`);ws.onopen=()=>ws.send(JSON.stringify({type:'join',name:'<img>'}));ws.onclose=e=>resolve(e.code);}));assert.equal(invalid,1008);
+ for(const path of ['/api_key.txt','/.env','/tools/generate_audio.py','/work/voice-reference.wav'])assert.equal((await a.request.get(URL+path)).status(),404);
+ await a.reload();await a.waitForFunction(()=>window.momongaDebug?.multiplayer);assert.equal(await a.evaluate(()=>momongaDebug.inventory.state.items.scale||0),0);assert.equal(await a.evaluate(()=>localStorage.length),0);
+ await a.setViewportSize({width:390,height:844});await a.screenshot({path:'work/intro-art-mobile.png'});await a.click('#start-game');await a.screenshot({path:'work/name-mobile.png'});
+ assert.deepEqual(errors,[]);console.log('PASS two-browser names/movement/glide/map filtering/emotes, 20-player cap + rejection, malformed name, leave cleanup, fresh inventory, no saved records, secret paths blocked');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
